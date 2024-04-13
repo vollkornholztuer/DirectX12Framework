@@ -11,11 +11,24 @@ namespace Engine {
 
 		switch (msg) {
 		case WM_NCCREATE: {
-			std::cout << "Created a window" << std::endl;
+			LPCREATESTRUCT param = reinterpret_cast<LPCREATESTRUCT>(lparam);
+			Application* pointer = reinterpret_cast<Application*>(param->lpCreateParams);
+			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pointer));
+			std::cout << "Create message sent" << std::endl;
+			break;
+		}
+		case WM_CREATE: {
+			Application* pointer = reinterpret_cast<Application*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+			pointer->OnCreate(hwnd);
+			break;
+		}
+		case WM_DESTROY: {
+			Application* pointer = reinterpret_cast<Application*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+			pointer->OnDestroy();
+			PostQuitMessage(0); // quit message saying: everything is fine
 			break;
 		}
 		}
-
 
 		// default handling of window process
 		return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -40,14 +53,14 @@ namespace Engine {
 		RegisterClass(&wndClass);
 
 		// create Windows
-		mWindowHandle = CreateWindow(L"BaseWindowClass", L"YOUTUBE ENGINE WINDOW", WS_OVERLAPPEDWINDOW, 200, 200, 1280, 720, 0, 0, 0, 0); // refer back to the lParam stuff later
+		mWindowHandle = CreateWindow(L"BaseWindowClass", L"YOUTUBE ENGINE WINDOW", WS_OVERLAPPEDWINDOW, 200, 200, 1280, 720, 0, 0, 0, this); // refer back to the lParam stuff later
 
 		// Check if pointer is not valid
 		if (!mWindowHandle) {
 			return false;
 		}
 
-		// actually show window
+		// display window
 		ShowWindow(mWindowHandle, SW_SHOW);
 		UpdateWindow(mWindowHandle);
 
@@ -56,8 +69,26 @@ namespace Engine {
 		return true;
 	}
 
+	void Application::OnCreate(HWND hwnd)
+	{
+		std::cout << "Window created" << std::endl;
+	}
+
 	void Application::Update()
 	{
+		// message handling
+		MSG message;
 		
+		// makes window responsive to moving etc.
+		while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&message);
+			DispatchMessage(&message);
+		}
+	}
+
+	void Application::OnDestroy()
+	{
+		std::cout << "Closed the window - shutting down application" << std::endl;
+		mIsRunning = false;
 	}
 }
