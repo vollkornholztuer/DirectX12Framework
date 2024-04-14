@@ -2,7 +2,7 @@
 #include "Application.h"
 
 #include <windowsx.h>
-#include <iostream>
+
 
 namespace Engine {
 
@@ -72,6 +72,7 @@ namespace Engine {
 	void Application::OnCreate(HWND hwnd)
 	{
 		std::cout << "Window created" << std::endl;
+		mRenderer.Initialize(hwnd); // initialize Renderer API when creating window
 	}
 
 	void Application::Update()

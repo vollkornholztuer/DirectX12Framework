@@ -1,7 +1,10 @@
 #pragma once
+#include "EngineMin.h"
+
 #include <Windows.h>
 
-#include "EngineMin.h"
+#include "Render API/RenderAPI.h"
+
 
 
 namespace Engine {
@@ -22,8 +25,11 @@ namespace Engine {
 
 		inline bool IsRunning() { return mIsRunning; }
 
+	private: // subsystems:
+		RenderAPI mRenderer; 
 
-	private:
+
+	private: // variables:
 		HWND mWindowHandle = nullptr;
 		bool mIsRunning = false; // check if application is running
 	};
