@@ -32,5 +32,9 @@ namespace Engine {
 	private: // variables:
 		HWND mWindowHandle = nullptr;
 		bool mIsRunning = false; // check if application is running
+
+	private:
+		UINT mWidth = 1280;
+		UINT mHeight = 720;
 	};
 }

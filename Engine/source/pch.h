@@ -16,5 +16,6 @@
 
 #include "EngineMin.h"
 #include "Helper.h"
+#include "EngineSettings.h"
 
 #endif

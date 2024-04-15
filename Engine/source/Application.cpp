@@ -38,6 +38,9 @@ namespace Engine {
 
 	bool Application::Initialize()
 	{
+
+
+
 		// define window properties
 		WNDCLASS wndClass = {}; // https://learn.microsoft.com/de-de/windows/win32/api/winuser/ns-winuser-wndclassexw
 		wndClass.lpszClassName = L"BaseWindowClass"; // reference to CreateWindow Class
@@ -54,7 +57,7 @@ namespace Engine {
 		RegisterClass(&wndClass);
 
 		// create Windows
-		mWindowHandle = CreateWindow(L"BaseWindowClass", L"YOUTUBE ENGINE WINDOW", WS_OVERLAPPEDWINDOW, 200, 200, 1280, 720, 0, 0, 0, this); // refer back to the lParam stuff later
+		mWindowHandle = CreateWindow(L"BaseWindowClass", L"YOUTUBE ENGINE WINDOW", WS_OVERLAPPEDWINDOW, 200, 200, mWidth, mHeight, 0, 0, 0, this); // refer back to the lParam stuff later
 
 		// Check if pointer is not valid
 		if (!mWindowHandle) {
@@ -73,7 +76,7 @@ namespace Engine {
 	void Application::OnCreate(HWND hwnd)
 	{
 		std::cout << "Window created" << std::endl;
-		mRenderer.Initialize(hwnd); // initialize Renderer API when creating window
+		mRenderer.Initialize(hwnd, mWidth, mHeight); // initialize Renderer API when creating window
 	}
 
 	void Application::Update()
@@ -86,6 +89,8 @@ namespace Engine {
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
+
+		mRenderer.UpdateDraw();
 	}
 
 	void Application::OnDestroy()
