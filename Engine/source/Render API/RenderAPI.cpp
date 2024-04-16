@@ -44,7 +44,9 @@ namespace Engine {
 
 	void RenderAPI::UpdateDraw()
 	{
-		
+		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mSwapChain.GetCurrentRTVHandle();
+		mCommandList.GFXCmd()->ClearRenderTargetView(rtvHandle, clearColor, 0, 0);
 	}
 
 	void RenderAPI::Release()

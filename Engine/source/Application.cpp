@@ -38,9 +38,6 @@ namespace Engine {
 
 	bool Application::Initialize()
 	{
-
-
-
 		// define window properties
 		WNDCLASS wndClass = {}; // https://learn.microsoft.com/de-de/windows/win32/api/winuser/ns-winuser-wndclassexw
 		wndClass.lpszClassName = L"BaseWindowClass"; // reference to CreateWindow Class
@@ -56,7 +53,7 @@ namespace Engine {
 		// tell Windows that "BaseWindowClass" is available
 		RegisterClass(&wndClass);
 
-		// create Windows
+		// create Window
 		mWindowHandle = CreateWindow(L"BaseWindowClass", L"YOUTUBE ENGINE WINDOW", WS_OVERLAPPEDWINDOW, 200, 200, mWidth, mHeight, 0, 0, 0, this); // refer back to the lParam stuff later
 
 		// Check if pointer is not valid
