@@ -46,6 +46,8 @@ namespace Engine {
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mSwapChain.GetCurrentRTVHandle();
 		mCommandList.GFXCmd()->ClearRenderTargetView(rtvHandle, clearColor, 0, 0);
 		mCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)mCommandList.GetAddressOf());
+
+		mCommandList.ResetCommandList();
 	}
 
 	void RenderAPI::Release()
