@@ -32,6 +32,10 @@ namespace Engine {
 	private:
 		UINT mWidth = 0;
 		UINT mHeight = 0;
+
+	// delete at end if tutorial doesn't
+	private: // temp test variables
+		UINT mCurrentidx = 0;
 	};
 }
 

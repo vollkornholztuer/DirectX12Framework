@@ -40,6 +40,8 @@ namespace Engine {
 		mBufferCount = G_MAX_SWAPCHAIN_BUFFERS;
 
 		mDevice = pDevice;
+
+		CreateBuffers();
 	
 	}
 
@@ -79,7 +81,7 @@ namespace Engine {
 	D3D12_CPU_DESCRIPTOR_HANDLE DXGISwapChain::GetCurrentRTVHandle()
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = mRTVHeap->GetCPUDescriptorHandleForHeapStart();
-		cpuHandle.ptr = (size_t)mCurrentBuffer * mHeapIncrement;
+		cpuHandle.ptr += (size_t)mCurrentBuffer * mHeapIncrement;
 
 		return cpuHandle;
 	}

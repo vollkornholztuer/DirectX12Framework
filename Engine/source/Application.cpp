@@ -86,17 +86,18 @@ namespace Engine {
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
-
-		mRenderer.UpdateDraw();
+		
+		if (mIsRunning) {
+			mRenderer.UpdateDraw();
+		}
 	}
 
 	void Application::OnDestroy()
 	{
+		mIsRunning = false;
 		std::cout << "Closed the window - shutting down application" << std::endl;
 		
 		mRenderer.Release();
 		DXGIDebug::Get().GetLiveObjects();
-		
-		mIsRunning = false;
 	}
 }
