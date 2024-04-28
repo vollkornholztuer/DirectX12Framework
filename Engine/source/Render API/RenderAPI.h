@@ -2,11 +2,14 @@
 #include "EngineMin.h"
 #include <Windows.h>
 
+#include "RenderDataTypes.h"
+
 #include "DirectX12/DXGI/DXGISwapChain.h"
 
 #include "DirectX12/Base/D12Device.h"
 #include "DirectX12/Commands/D12CommandQueue.h"
 #include "DirectX12/Commands/D12CommandList.h"
+#include "DirectX12/Resource/D12Resource.h"
 
 namespace Engine {
 
@@ -28,6 +31,8 @@ namespace Engine {
 		D12CommandList mCommandList;
 
 		DXGISwapChain mSwapChain;
+
+		D12Resource mDynamicVertexBuffer;
 
 	private:
 		UINT mWidth = 0;
