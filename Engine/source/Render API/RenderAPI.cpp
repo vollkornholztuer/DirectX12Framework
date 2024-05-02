@@ -58,6 +58,24 @@ namespace Engine {
 
 
 		/*
+
+		Create shader programs
+		- Wrapper for the shaders and their compliation
+		- Create the actual shaders/program
+
+		Setup two input layouts (one for vertex/index + one for datastructures needed for the pipeline/shader programs)
+		- The pipeline input state
+		- The root signature
+
+		Set up the actual pipeline
+		- Wrapper
+		-- Simply set parameters
+		- Create the functionality that couples everything into a complete pipeline
+
+		*/
+
+
+		/*
 		// ONLY CPU = default ram / cache
 		// ONLY GPU = default heap on GPU (VRAM)
 		// Shared CPU and GPU = with read/write for all -  it's stored on the GPU
