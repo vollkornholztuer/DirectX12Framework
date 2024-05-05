@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "RenderAPI.h"
 
+#include <vector>
+
 #include "DirectX12/DXGI/DXGIFactory.h"
 #include "DirectX12/DXGI/DXGIAdapter.h"
 
@@ -45,18 +47,43 @@ namespace Engine {
 		mDynamicVertexBuffer.Initialize(mDevice.Get(), KBs(16), D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
 		mDynamicVertexBuffer.Get()->SetName(L"Dynamic vertex buffer");
 
-		Vertex vertexData;
-		vertexData.position = { 1.0f,5.0f,3.0f };
-		vertexData.color = { 0.0f,1.0f,0.0f,1.0f };
+
+		std::vector<Vertex> vertices;
+
+		for (int i = 0; i < 3; i++) {
+			Vertex vertexData;
+			vertexData.color = { 0.0f,1.0f,0.0f,1.0f };
+
+			if (i == 0) {
+				vertexData.position = { -1.0f, -1.0f, 0.0f };
+			} else if (i == 1) {
+				vertexData.position = { 0.0f, 1.0f, 0.0f };
+			} else {
+				vertexData.position = { 1.0f, -1.0f, 0.0f };
+			}
+			
+			vertices.push_back(vertexData);
+		}
+
+		
+
+		/*
+		RIGHT NOW FOR SCREEN SPACE COORDINATES, VERTICES ONLY HAVE X AND Y mapped to (-1, 1) -> (1, -1)
+		*/
 
 		//could be part of the wrapper for the reousrce, which would store the CPU sided pointer to the memory location
 		void* destination = nullptr;
 
 		mDynamicVertexBuffer->Map(0, 0, &destination);
 
-		memcpy(destination, &vertexData, sizeof(Vertex));
+		// memcpy(destination, &vertexData, sizeof(Vertex));
+		memcpy(destination, vertices.data(), sizeof(Vertex) * vertices.size());
 
 		mDynamicVertexBuffer->Unmap(0, 0);
+
+		mDynamicVBView.BufferLocation = mDynamicVertexBuffer.Get()->GetGPUVirtualAddress();
+		mDynamicVBView.StrideInBytes = sizeof(Vertex);
+		mDynamicVBView.SizeInBytes = KBs(16);
 
 		/*
 		//ONLY CPU = default ram / cache
@@ -68,6 +95,18 @@ namespace Engine {
 		*/
 
 		mBasePipeline.Initialize(mDevice.Get());
+
+		mViewport.TopLeftX = 0;
+		mViewport.TopLeftY = 0;
+		mViewport.Width = mWidth;
+		mViewport.Height = mHeight;
+		mViewport.MinDepth = 0.0f;
+		mViewport.MaxDepth = 1.0f;
+
+		mSRRect.left = 0;
+		mSRRect.right = mViewport.Width;
+		mSRRect.top = 0;
+		mSRRect.bottom = mViewport.Height;
 	}
 
 	void RenderAPI::UpdateDraw()
@@ -82,11 +121,25 @@ namespace Engine {
 
 		mCommandList.GFXCmd()->ResourceBarrier(1, &barrier);
 
-		const float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mSwapChain.GetCurrentRTVHandle();
 		mCommandList.GFXCmd()->ClearRenderTargetView(rtvHandle, clearColor, 0, 0);
+		mCommandList.GFXCmd()->OMSetRenderTargets(1, &rtvHandle, false, 0);
 
-		// mCurrentidx = (mCurrentidx + 1) % 2; // temp value, delete at end if tutorial doesn't
+		mCommandList.GFXCmd()->RSSetViewports(1, &mViewport);
+		mCommandList.GFXCmd()->RSSetScissorRects(1, &mSRRect);
+
+		mCommandList.GFXCmd()->SetGraphicsRootSignature(mBasePipeline.GetRS());
+		mCommandList.GFXCmd()->SetPipelineState(mBasePipeline.Get());
+		mCommandList.GFXCmd()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		
+		mCommandList.GFXCmd()->IASetVertexBuffers(0, 1, &mDynamicVBView);
+
+
+		// Do Drawing stuff here
+
+		mCommandList.GFXCmd()->DrawInstanced(3, 1, 0, 0);
+
 
 		barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
