@@ -11,6 +11,8 @@
 #include "DirectX12/Commands/D12CommandList.h"
 #include "DirectX12/Resource/D12Resource.h"
 
+#include "DirectX12/Pipeline/D12PipelineState.h"
+
 namespace Engine {
 
 	class YT_API RenderAPI
@@ -31,6 +33,8 @@ namespace Engine {
 		D12CommandList mCommandList;
 
 		DXGISwapChain mSwapChain;
+
+		D12PipelineState mBasePipeline;
 
 		D12Resource mDynamicVertexBuffer;
 

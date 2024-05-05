@@ -20,7 +20,7 @@ namespace Engine {
 		mWidth = width;
 		mHeight = height;
 
-		// this could be disabled during non-debug-builds
+		//this could be disabled during non-debug-builds
 		D12Debug::Get().Enable();
 
 		DXGIFactory factory;
@@ -30,9 +30,9 @@ namespace Engine {
 		{
 			DXGI_ADAPTER_DESC desc;
 			adapter->GetDesc(&desc);
-			PRINT_W_N("Selected GPU: " << desc.Description);
+			PRINT_W_N("Selected device " << desc.Description);
 		}
-		/* END DEBUGGING OUTPUT*/
+		/* END DEBUGGING OUTPUT */
 
 		mDevice.Init(adapter.Get());
 		mDevice->SetName(L"Main virtual device");
@@ -45,44 +45,29 @@ namespace Engine {
 		mDynamicVertexBuffer.Initialize(mDevice.Get(), KBs(16), D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
 		mDynamicVertexBuffer.Get()->SetName(L"Dynamic vertex buffer");
 
-		// from namespace Render
 		Vertex vertexData;
-		vertexData.position = { 1.0f, 5.0f, 3.0f };
-		vertexData.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		vertexData.position = { 1.0f,5.0f,3.0f };
+		vertexData.color = { 0.0f,1.0f,0.0f,1.0f };
 
-		void* destination = nullptr; // address on CPU .. 
-		mDynamicVertexBuffer->Map(0, 0, &destination); // mapped to whatever address on shared memory
+		//could be part of the wrapper for the reousrce, which would store the CPU sided pointer to the memory location
+		void* destination = nullptr;
+
+		mDynamicVertexBuffer->Map(0, 0, &destination);
+
 		memcpy(destination, &vertexData, sizeof(Vertex));
 
 		mDynamicVertexBuffer->Unmap(0, 0);
 
-
 		/*
+		//ONLY CPU = default ram / cache
+		//ONLY GPU = default heap on GPU (VRAM)
+		//Shared CPU and GPU = with read/write for all - it's stored on the GPU
+		//Readback memory on GPU (With Read from the CPU)
 
-		Create shader programs
-		- Wrapper for the shaders and their compliation
-		- Create the actual shaders/program
-
-		Setup two input layouts (one for vertex/index + one for datastructures needed for the pipeline/shader programs)
-		- The pipeline input state
-		- The root signature
-
-		Set up the actual pipeline
-		- Wrapper
-		-- Simply set parameters
-		- Create the functionality that couples everything into a complete pipeline
 
 		*/
 
-
-		/*
-		// ONLY CPU = default ram / cache
-		// ONLY GPU = default heap on GPU (VRAM)
-		// Shared CPU and GPU = with read/write for all -  it's stored on the GPU
-		// Reaedback memory on GPU (With Read from the CPU)
-
-		*/
-
+		mBasePipeline.Initialize(mDevice.Get());
 	}
 
 	void RenderAPI::UpdateDraw()
@@ -101,7 +86,7 @@ namespace Engine {
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mSwapChain.GetCurrentRTVHandle();
 		mCommandList.GFXCmd()->ClearRenderTargetView(rtvHandle, clearColor, 0, 0);
 
-		mCurrentidx = (mCurrentidx + 1) % 2; // temp value, delete at end if tutorial doesn't
+		// mCurrentidx = (mCurrentidx + 1) % 2; // temp value, delete at end if tutorial doesn't
 
 		barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -130,7 +115,7 @@ namespace Engine {
 		mDynamicVertexBuffer.Release();
 
 		mCommandQueue.FlushQueue();
-		
+
 		mSwapChain.Release();
 
 		mCommandList.Release();
